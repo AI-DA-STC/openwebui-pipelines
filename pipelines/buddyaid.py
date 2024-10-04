@@ -9,14 +9,18 @@ requirements: requests
 """
 
 import requests
-import json
+import re
 from typing import List, Union, Generator, Iterator
-from schemas import OpenAIChatMessage
 import logging
 logger = logging.getLogger(__name__)
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+
+def extract_responses(text):
+    pattern = r'<response>(.*?)</response>'
+    responses = re.findall(pattern, text, re.DOTALL)
+    return responses[0]
 
 class Pipeline:
     def __init__(self):
@@ -56,8 +60,7 @@ class Pipeline:
         # Extract the assistant's message and new state
         assistant_message = result["choices"][0]["message"]["content"]
 
-
-
+        assistant_message = extract_responses(assistant_message)
         # Yield the assistant's message
         return assistant_message
 
