@@ -10,7 +10,7 @@ requirements: requests
 
 import requests
 import re
-from typing import List, Union, Generator, Iterator
+from typing import List, Union, Generator, Iterator, Optional
 import logging
 logger = logging.getLogger(__name__)
 import sys
@@ -25,7 +25,6 @@ def extract_responses(text):
 class Pipeline:
     def __init__(self):
         self.api_base = "http://localhost:8000"  
-        self.state = None
 
     async def on_startup(self):
         # This function is called when the server is started.
@@ -34,6 +33,10 @@ class Pipeline:
     async def on_shutdown(self):
         # This function is called when the server is stopped.
         print(f"on_shutdown:{__name__}")
+    
+    async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
+        body["pipeline_metadata"] = {"chat_id": body["chat_id"]}
+        return body
 
     def pipe(
         self, user_message: str, model_id: str, messages: List[dict], body: dict
@@ -47,7 +50,8 @@ class Pipeline:
         # Prepare the request data
         data = {
             "messages": messages,
-            "state": self.state
+            "chat_id": body["pipeline_metadata"]["chat_id"],
+            "username": body["user"]["name"]
         }
         #data = json.dumps(data)
         print(f"input data sent to pipeline API {data}")
