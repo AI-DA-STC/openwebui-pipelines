@@ -18,9 +18,14 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
 def extract_responses(text):
-    pattern = r'<response>(.*?)</response>'
-    responses = re.findall(pattern, text, re.DOTALL)
-    return responses[0]
+    pattern1 = r'<response>(.*?)</response>'
+    responses = re.findall(pattern1, text, re.DOTALL)
+    pattern2 = r'<sources>(.*?)</sources>'
+    sources = re.findall(pattern2, text, re.DOTALL)
+    if len(sources)>0:
+        return responses[0]+'\n'+sources[0]
+    else:
+        return responses[0]
 
 class Pipeline:
     def __init__(self):
