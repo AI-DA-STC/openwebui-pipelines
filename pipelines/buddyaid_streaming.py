@@ -1,9 +1,6 @@
 import json
 import requests
-import sseclient
 from typing import List, Union, Generator, Iterator, Optional
-
-from matplotlib.font_manager import json_load
 
 
 class Pipeline:
